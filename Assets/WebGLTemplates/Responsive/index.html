@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>{{{ PRODUCT_NAME }}}</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #090e17;
+        touch-action: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+        position: fixed;
+      }
+      #unity-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #unity-canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        touch-action: none;
+        outline: none;
+        background: #090e17;
+      }
+      #unity-loading-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: #090e17;
+        z-index: 100;
+        transition: opacity 0.5s ease;
+      }
+      .loading-brand {
+        color: #f0f4f8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin-bottom: 24px;
+        text-align: center;
+      }
+      .loading-brand span {
+        color: #1fc16b;
+      }
+      .progress-bar-track {
+        width: 260px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #1fc16b, #ffd700);
+        border-radius: 4px;
+        transition: width 0.2s ease-out;
+      }
+      .loading-status {
+        color: rgba(240, 244, 248, 0.7);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 13px;
+        margin-top: 14px;
+        letter-spacing: 0.5px;
+      }
+      #unity-warning {
+        position: absolute;
+        bottom: 20px;
+        max-width: 90%;
+        padding: 12px 18px;
+        border-radius: 6px;
+        font-family: sans-serif;
+        font-size: 14px;
+        color: #fff;
+        display: none;
+        z-index: 200;
+        text-align: center;
+      }
+      .warning-error {
+        background: rgba(220, 53, 69, 0.92);
+      }
+      .warning-warn {
+        background: rgba(255, 193, 7, 0.92);
+        color: #212529 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="unity-container">
+      <canvas id="unity-canvas" tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div class="loading-brand">POCKET PUTT <span>ARENA</span></div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <div class="loading-status" id="loading-status">Loading course... 0%</div>
+      </div>
+      <div id="unity-warning"></div>
+    </div>
+
+    <script src="Build/{{{ LOADER_FILENAME }}}"></script>
+    <script>
+      // Prevent accidental scrolling or bounce on mobile devices
+      document.addEventListener('touchmove', function (e) {
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+        }
+      }, { passive: false });
+
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressFill = document.querySelector("#progress-fill");
+      var loadingStatus = document.querySelector("#loading-status");
+      var warningBanner = document.querySelector("#unity-warning");
+
+      function showBanner(msg, type) {
+        warningBanner.innerHTML = msg;
+        warningBanner.className = (type === 'error') ? 'warning-error' : 'warning-warn';
+        warningBanner.style.display = 'block';
+        if (type !== 'error') {
+          setTimeout(function () {
+            warningBanner.style.display = 'none';
+          }, 5000);
+        }
+      }
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+        frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+#if USE_THREADS
+        workerUrl: buildUrl + "/{{{ WORKER_FILENAME }}}",
+#endif
+#if USE_WASM
+        codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
+#endif
+#if SYMBOLS_FILENAME
+        symbolsUrl: buildUrl + "/{{{ SYMBOLS_FILENAME }}}",
+#endif
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
+        productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
+        productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
+        showBanner: showBanner,
+      };
+
+      createUnityInstance(canvas, config, function (progress) {
+        var pct = Math.round(progress * 100);
+        progressFill.style.width = pct + "%";
+        loadingStatus.textContent = "Loading course... " + pct + "%";
+      }).then(function (unityInstance) {
+        loadingBar.style.opacity = "0";
+        setTimeout(function () {
+          loadingBar.style.display = "none";
+        }, 500);
+        window.unityInstance = unityInstance;
+      }).catch(function (message) {
+        showBanner("Failed to launch game: " + message, 'error');
+      });
+    </script>
+  </body>
+</html>

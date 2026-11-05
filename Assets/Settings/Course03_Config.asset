@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cc4cd10d33e02944abfc731d28cae4b, type: 3}
+  m_Name: Course03_Config
+  m_EditorClassIdentifier: Assembly-CSharp::CourseConfig
+  courseId: 3
+  courseName: Frostlight Ridge
+  difficulty: Medium
+  parScore: 3
+  teePosition: {x: 0, y: 0.1605, z: -8}
+  holePosition: {x: 0, y: 0, z: 8}
+  flagPosition: {x: 0, y: 1, z: 8}
+  cameraInitialOffset: {x: 0, y: 14.65, z: -9}
+  cameraPitch: 40
+  cameraYaw: 0
+  defaultFOV: 55
+  maxCameraZ: 0.5
+  rollingResistance: 0.08
+  maxEntrySpeed: 3.2
+  captureRadius: 0.24

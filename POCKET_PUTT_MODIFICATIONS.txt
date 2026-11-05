@@ -1,0 +1,12 @@
+POCKET PUTT ARENA — MODIFIED SOURCE SNAPSHOT
+
+Changes made in this package:
+- Player golf ball scale reduced by 50% (0.63 m -> 0.315 m diameter); Rigidbody mass retained at 0.0459 kg.
+- Tee/reset heights, sphere-radius calculations, aim ring/chevrons, trail sizing, opponent balls and hole dimensions updated for the smaller ball.
+- Cup diameter adjusted from approximately 1.10 m to 0.80 m; trigger/capture radius reduced for the smaller ball.
+- WebGL's active Mobile URP profile changed from 0.8x render scale to 1.0x and 2x MSAA; PC profile set to 4x MSAA.
+- Source texture filtering changed to trilinear with higher anisotropic filtering; golf-ball dimple normal map regenerated at 1024x1024.
+- Five course-specific playable obstacle layouts added: forest log chicane, canyon switchbacks, glacier diagonal slalom, jade garden gates, and bending coastal boardwalk rails.
+- Frostlight Ridge background mountain silhouette made taller and more alpine.
+
+Important validation note: This source snapshot was edited outside Unity. It has not been compiled in the Unity Editor or tested in a built WebGL player in this environment. Open it in the supplied Unity 6000.3.27f2 project, allow asset import, check the Console, then test all five courses before publishing.
